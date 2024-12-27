@@ -33,11 +33,8 @@ public class NotificationEventConsumer {
                     .timestamp(event.getEnrollmentDate())
                     .build();
 
-            messagingTemplate.convertAndSendToUser(
-                    event.getUserId(),
-                    "/queue/notifications",
-                    content
-            );
+            String destination = String.format("%s%s%s", "/queue/", event.getUserId(), "/notifications");
+            messagingTemplate.convertAndSend(destination, content);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
