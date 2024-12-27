@@ -1,18 +1,22 @@
 package us.cloud.teachme.notification_service.domain;
 
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.time.Instant;
 
 @Data
+@Builder
+@Document
 public class Notification {
+    @Id
     private String id;
     private String userId;
     private String title;
     private String message;
     private String type;
-    private LocalDateTime timestamp;
+    private Instant timestamp;
     private boolean read;
-    private Map<String, Object> metadata;
 }

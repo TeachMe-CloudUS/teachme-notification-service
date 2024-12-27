@@ -10,7 +10,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
 import us.cloud.teachme.notification_service.application.service.NotificationTemplateService;
+import us.cloud.teachme.notification_service.domain.Notification;
 import us.cloud.teachme.notification_service.domain.event.StudentCreatedEvent;
+import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 @Component
 @Slf4j
@@ -19,6 +21,7 @@ public class NotificationEventConsumer {
 
     private final NotificationTemplateService templateService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MongoNotificationRepository repository;
     private final ObjectMapper mapper;
 
     @KafkaListener(topics = "student-service.student.created")
@@ -26,12 +29,22 @@ public class NotificationEventConsumer {
         try {
             StudentCreatedEvent event = mapper.readValue(message, StudentCreatedEvent.class);
 
-            NotificationContent content = NotificationContent.builder()
+            var entity = Notification.builder()
                     .title("Welcome to TeachMe!")
                     .message(templateService.generateStudentWelcomeMessage(event))
                     .type("STUDENT_CREATED")
                     .timestamp(event.getEnrollmentDate())
                     .build();
+
+
+            var content = NotificationContent.builder()
+                    .title("Welcome to TeachMe!")
+                    .message(templateService.generateStudentWelcomeMessage(event))
+                    .type("STUDENT_CREATED")
+                    .timestamp(event.getEnrollmentDate())
+                    .build();
+
+            repository.save(entity);
 
             String destination = String.format("%s%s%s", "/queue/", event.getUserId(), "/notifications");
             messagingTemplate.convertAndSend(destination, content);

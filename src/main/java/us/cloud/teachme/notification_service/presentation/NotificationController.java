@@ -7,26 +7,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import us.cloud.teachme.notification_service.domain.Notification;
+import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
 
     private static final Integer DEFAULT_MAX = 5;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MongoNotificationRepository repository;
 
     @GetMapping
-    public Notification getNotifications(
+    public List<Notification> getNotifications(
+            @RequestParam("id") String id,
             @RequestParam("unread") Boolean unread,
             @RequestParam("max") Integer max
     ) {
         if (Objects.isNull(max)) {
             max = DEFAULT_MAX;
         }
-        return null;
+
+        return repository.findAllByUserId(id).subList(0, max);
     }
 
     @GetMapping("/health")
