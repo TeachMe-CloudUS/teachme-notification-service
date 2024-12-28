@@ -2,10 +2,8 @@ package us.cloud.teachme.notification_service.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import us.cloud.teachme.notification_service.application.dto.NotificationsInfo;
 import us.cloud.teachme.notification_service.domain.Notification;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
@@ -32,6 +30,26 @@ public class NotificationController {
         }
 
         return repository.findAllByUserId(id).subList(0, max);
+    }
+
+    @GetMapping("/info")
+    public NotificationsInfo getNotificationInfo(@RequestParam("id") String id) {
+        var info = new NotificationsInfo();
+        var allNotifications = repository.findAllByUserId(id);
+        info.setNumberOfMessages(allNotifications.size());
+        info.setRecentNotifications(allNotifications.subList(0, DEFAULT_MAX));
+        info.setNumberOfUnreadMessages(
+                (int) allNotifications.stream().filter((n) -> !n.isRead()).count()
+        );
+        return info;
+    }
+
+    @PutMapping("/read")
+    public void readMessage(@RequestParam("id") String id) {
+        repository.findById(id).ifPresent(notification -> {
+            notification.setRead(true);
+            repository.save(notification);
+        });
     }
 
     @GetMapping("/health")
