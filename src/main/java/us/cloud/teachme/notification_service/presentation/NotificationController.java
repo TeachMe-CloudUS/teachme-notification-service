@@ -37,7 +37,7 @@ public class NotificationController {
         var info = new NotificationsInfo();
         var allNotifications = repository.findAllByUserId(id);
         info.setNumberOfMessages(allNotifications.size());
-        info.setRecentNotifications(allNotifications.subList(0, DEFAULT_MAX));
+        info.setRecentNotifications(allNotifications.subList(0, Math.min(DEFAULT_MAX, allNotifications.size())));
         info.setNumberOfUnreadMessages(
                 (int) allNotifications.stream().filter((n) -> !n.isRead()).count()
         );

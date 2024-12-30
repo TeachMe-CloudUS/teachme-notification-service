@@ -31,11 +31,11 @@ public class NotificationEventConsumer {
 
             var entity = Notification.builder()
                     .title("Welcome to TeachMe!")
+                    .userId(event.getUserId())
                     .message(templateService.generateStudentWelcomeMessage(event))
                     .type("STUDENT_CREATED")
                     .timestamp(event.getEnrollmentDate())
                     .build();
-
 
             var content = NotificationContent.builder()
                     .title("Welcome to TeachMe!")
