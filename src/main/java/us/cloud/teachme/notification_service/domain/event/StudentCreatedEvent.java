@@ -18,5 +18,5 @@ public class StudentCreatedEvent extends DomainEvent {
     private String eventName;
     private String name;
     private String surname;
-    private Instant enrollmentDate;
+    private Instant timestamp;
 }

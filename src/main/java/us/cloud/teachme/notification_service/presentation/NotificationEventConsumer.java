@@ -34,14 +34,14 @@ public class NotificationEventConsumer {
                     .userId(event.getUserId())
                     .message(templateService.generateStudentWelcomeMessage(event))
                     .type("STUDENT_CREATED")
-                    .timestamp(event.getEnrollmentDate())
+                    .timestamp(event.getTimestamp())
                     .build();
 
             var content = NotificationContent.builder()
                     .title("Welcome to TeachMe!")
                     .message(templateService.generateStudentWelcomeMessage(event))
                     .type("STUDENT_CREATED")
-                    .timestamp(event.getEnrollmentDate())
+                    .timestamp(event.getTimestamp())
                     .build();
 
             repository.save(entity);
