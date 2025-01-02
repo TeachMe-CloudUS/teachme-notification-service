@@ -21,6 +21,8 @@ public class Notification {
 
     private String title;
 
+    private String previewText;
+
     private String message;
 
     private String type;

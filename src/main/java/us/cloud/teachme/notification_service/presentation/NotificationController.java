@@ -1,7 +1,9 @@
 package us.cloud.teachme.notification_service.presentation;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import us.cloud.teachme.notification_service.application.dto.NotificationsInfo;
 import us.cloud.teachme.notification_service.domain.Notification;
@@ -21,7 +23,7 @@ public class NotificationController {
 
     @GetMapping
     public List<Notification> getNotifications(
-            @RequestParam("id") String id,
+            @AuthenticationPrincipal Claims claims,
             @RequestParam("unread") Boolean unread,
             @RequestParam("max") Integer max
     ) {
@@ -29,13 +31,18 @@ public class NotificationController {
             max = DEFAULT_MAX;
         }
 
-        return repository.findAllByUserId(id).subList(0, max);
+        return repository.findAllByUserId(claims.getSubject()).subList(0, max);
+    }
+
+    @GetMapping("/{id}")
+    public Notification getNotification(@PathVariable String id) {
+        return repository.findById(id).orElseThrow();
     }
 
     @GetMapping("/info")
-    public NotificationsInfo getNotificationInfo(@RequestParam("id") String id) {
+    public NotificationsInfo getNotificationInfo(@AuthenticationPrincipal Claims claims) {
         var info = new NotificationsInfo();
-        var allNotifications = repository.findAllByUserId(id);
+        var allNotifications = repository.findAllByUserId(claims.getSubject());
         info.setNumberOfMessages(allNotifications.size());
         info.setRecentNotifications(allNotifications.subList(0, Math.min(DEFAULT_MAX, allNotifications.size())));
         info.setNumberOfUnreadMessages(
@@ -46,10 +53,9 @@ public class NotificationController {
 
     @PutMapping("/read")
     public void readMessage(@RequestParam("id") String id) {
-        repository.findById(id).ifPresent(notification -> {
-            notification.setRead(true);
-            repository.save(notification);
-        });
+        var notification = repository.findById(id).orElseThrow();
+        notification.setRead(true);
+        repository.save(notification);
     }
 
     @GetMapping("/health")

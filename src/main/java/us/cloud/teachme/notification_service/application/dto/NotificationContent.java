@@ -7,6 +7,7 @@ import java.time.Instant;
 @Builder
 public record NotificationContent(
         String title,
+        String previewText,
         String message,
         String type,
         Instant timestamp

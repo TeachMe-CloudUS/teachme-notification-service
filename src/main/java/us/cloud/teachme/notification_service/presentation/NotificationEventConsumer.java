@@ -29,17 +29,21 @@ public class NotificationEventConsumer {
         try {
             StudentCreatedEvent event = mapper.readValue(message, StudentCreatedEvent.class);
 
+            var messageTemplate = templateService.generateStudentWelcomeMessage(event);
+
             var entity = Notification.builder()
                     .title("Welcome to TeachMe!")
                     .userId(event.getUserId())
-                    .message(templateService.generateStudentWelcomeMessage(event))
+                    .message(messageTemplate.getContent())
+                    .previewText(messageTemplate.getPreviewText())
                     .type("STUDENT_CREATED")
                     .timestamp(event.getTimestamp())
                     .build();
 
             var content = NotificationContent.builder()
                     .title("Welcome to TeachMe!")
-                    .message(templateService.generateStudentWelcomeMessage(event))
+                    .message(messageTemplate.getContent())
+                    .previewText(messageTemplate.getPreviewText())
                     .type("STUDENT_CREATED")
                     .timestamp(event.getTimestamp())
                     .build();
