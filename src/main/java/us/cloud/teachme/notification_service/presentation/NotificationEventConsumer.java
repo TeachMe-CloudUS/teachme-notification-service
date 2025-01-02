@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
+import us.cloud.teachme.notification_service.application.ports.AzureFunctionNotifier;
+import us.cloud.teachme.notification_service.application.ports.WebSocketPort;
 import us.cloud.teachme.notification_service.application.service.NotificationTemplateService;
 import us.cloud.teachme.notification_service.domain.Notification;
 import us.cloud.teachme.notification_service.domain.event.StudentCreatedEvent;
@@ -20,9 +22,10 @@ import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNot
 public class NotificationEventConsumer {
 
     private final NotificationTemplateService templateService;
-    private final SimpMessagingTemplate messagingTemplate;
     private final MongoNotificationRepository repository;
     private final ObjectMapper mapper;
+    private final WebSocketPort webSocketPort;
+    private final AzureFunctionNotifier azureFunctionNotifier;
 
     @KafkaListener(topics = "student-service.student.created")
     public void consume(@Payload String message) {
@@ -40,18 +43,13 @@ public class NotificationEventConsumer {
                     .timestamp(event.getTimestamp())
                     .build();
 
-            var content = NotificationContent.builder()
-                    .title("Welcome to TeachMe!")
-                    .message(messageTemplate.getContent())
-                    .previewText(messageTemplate.getPreviewText())
-                    .type("STUDENT_CREATED")
-                    .timestamp(event.getTimestamp())
-                    .build();
+            var content = NotificationContent.create(entity);
+            var mailContent = EmailNotificationContent.create(entity, messageTemplate.emailContent);
 
             repository.save(entity);
 
-            String destination = String.format("%s%s%s", "/queue/", event.getUserId(), "/notifications");
-            messagingTemplate.convertAndSend(destination, content);
+            webSocketPort.sendNotification(content);
+            azureFunctionNotifier.notify(mailContent);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
