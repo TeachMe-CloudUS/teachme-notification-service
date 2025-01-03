@@ -31,7 +31,11 @@ public class NotificationController {
             max = DEFAULT_MAX;
         }
 
-        return repository.findAllByUserId(claims.getSubject()).subList(0, max);
+        return repository.findAllByUserId(claims.getSubject())
+                .stream()
+                .sorted((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()))
+                .toList()
+                .subList(0, max);
     }
 
     @GetMapping("/{id}")
@@ -42,7 +46,10 @@ public class NotificationController {
     @GetMapping("/info")
     public NotificationsInfo getNotificationInfo(@AuthenticationPrincipal Claims claims) {
         var info = new NotificationsInfo();
-        var allNotifications = repository.findAllByUserId(claims.getSubject());
+        var allNotifications = repository.findAllByUserId(claims.getSubject())
+                .stream()
+                .sorted((n1, n2) -> n2.getTimestamp().compareTo(n1.getTimestamp()))
+                .toList();
         info.setNumberOfMessages(allNotifications.size());
         info.setRecentNotifications(allNotifications.subList(0, Math.min(DEFAULT_MAX, allNotifications.size())));
         info.setNumberOfUnreadMessages(
