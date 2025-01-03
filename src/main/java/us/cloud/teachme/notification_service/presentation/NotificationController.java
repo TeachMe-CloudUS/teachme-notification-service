@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import us.cloud.teachme.notification_service.application.dto.NotificationsInfo;
 import us.cloud.teachme.notification_service.domain.Notification;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
+import us.cloud.teachme.notification_service.presentation.request.CreateNotificationRequestDto;
+import us.cloud.teachme.notification_service.presentation.request.UpdateNotificationRequestDto;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +48,7 @@ public class NotificationController {
                 .toList()
                 .subList(0, max);
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a specific notification", description = "Fetches the notification by its ID for the currently authenticated user.")
@@ -83,6 +86,56 @@ public class NotificationController {
         var notification = repository.findById(id).orElseThrow();
         notification.setRead(true);
         repository.save(notification);
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a new notification", description = "Adds a new notification for a user.")
+    @ApiResponse(responseCode = "201", description = "Notification successfully created")
+    @ApiResponse(responseCode = "400", description = "Invalid request")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
+    public Notification createNotification(@RequestBody CreateNotificationRequestDto createNotificationRequest) {
+        var notification = Notification.builder()
+                .userId(createNotificationRequest.getUserId())
+                .title(createNotificationRequest.getTitle())
+                .message(createNotificationRequest.getMessage())
+                .type(createNotificationRequest.getType())
+                .timestamp(createNotificationRequest.getTimestamp())
+                .build();
+        return repository.save(notification);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing notification", description = "Updates the details of an existing notification.")
+    @ApiResponse(responseCode = "200", description = "Notification successfully updated")
+    @ApiResponse(responseCode = "404", description = "Notification not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
+    public Notification updateNotification(@PathVariable String id, @RequestBody UpdateNotificationRequestDto updatedNotification) {
+        var existingNotification = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+
+        if (updatedNotification.getTitle() != null) {
+            existingNotification.setTitle(updatedNotification.getTitle());
+        }
+        if (updatedNotification.getMessage() != null) {
+            existingNotification.setMessage(updatedNotification.getMessage());
+        }
+        if (updatedNotification.getType() != null) {
+            existingNotification.setType(updatedNotification.getType());
+        }
+        existingNotification.setRead(updatedNotification.isRead());
+
+        return repository.save(existingNotification);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a notification", description = "Removes a notification by its ID.")
+    @ApiResponse(responseCode = "200", description = "Notification successfully deleted")
+    @ApiResponse(responseCode = "404", description = "Notification not found")
+    @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
+    public void deleteNotification(@PathVariable String id) {
+        var existingNotification = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+        repository.delete(existingNotification);
     }
 
     @GetMapping("/health")
