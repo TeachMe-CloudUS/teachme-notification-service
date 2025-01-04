@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
 import us.cloud.teachme.notification_service.application.ports.WebSocketPort;
 import us.cloud.teachme.notification_service.domain.Notification;
-import us.cloud.teachme.notification_service.domain.event.CertificateCreatedEvent;
+import us.cloud.teachme.notification_service.presentation.event.CertificateCreatedEvent;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 import java.time.Instant;

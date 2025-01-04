@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import us.cloud.teachme.notification_service.domain.event.StudentCreatedEvent;
+import us.cloud.teachme.notification_service.presentation.event.StudentCreatedEvent;
 
 @Service
 @Slf4j

@@ -10,7 +10,7 @@ import us.cloud.teachme.notification_service.application.ports.AzureFunctionNoti
 import us.cloud.teachme.notification_service.application.ports.WebSocketPort;
 import us.cloud.teachme.notification_service.application.service.NotificationTemplateService;
 import us.cloud.teachme.notification_service.domain.Notification;
-import us.cloud.teachme.notification_service.domain.event.StudentCreatedEvent;
+import us.cloud.teachme.notification_service.presentation.event.StudentCreatedEvent;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 @Service

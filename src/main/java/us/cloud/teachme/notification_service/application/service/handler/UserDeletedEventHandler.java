@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
 import us.cloud.teachme.notification_service.application.ports.AzureFunctionNotifier;
-import us.cloud.teachme.notification_service.domain.event.UserDeletedEvent;
+import us.cloud.teachme.notification_service.presentation.event.UserDeletedEvent;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 @Service

@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.domain.event;
+package us.cloud.teachme.notification_service.presentation.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
