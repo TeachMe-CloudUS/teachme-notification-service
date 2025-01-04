@@ -23,7 +23,7 @@ FROM eclipse-temurin:23-jre-alpine
 
 RUN apk add --no-cache python3 py3-pip supervisor
 
-COPY --from=build /app/target/student-service-0.0.1-SNAPSHOT.jar /app/student-service.jar
+COPY --from=build /app/target/notification-service-0.0.1-SNAPSHOT.jar /app/notification-service.jar
 
 COPY config/supervisord.conf /etc/supervisord.conf
 
