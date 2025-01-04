@@ -30,6 +30,15 @@ public class AzureNotificationService implements AzureFunctionNotifier {
 
         var email = user.getContactInformation().getEmail();
 
+        triggerFunction(notification, email);
+    }
+
+    @Override
+    public void notify(EmailNotificationContent notification, String email) {
+        triggerFunction(notification, email);
+    }
+
+    private void triggerFunction(EmailNotificationContent notification, String email) {
         try {
             var body = EmailRequest.builder()
                     .to(email)
@@ -51,5 +60,4 @@ public class AzureNotificationService implements AzureFunctionNotifier {
             log.error("Failed to send notification to: {}", email, e);
         }
     }
-
 }

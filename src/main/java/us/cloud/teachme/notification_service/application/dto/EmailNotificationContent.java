@@ -16,4 +16,12 @@ public record EmailNotificationContent(
                 .emailContent(emailContent)
                 .build();
     }
+
+    public static EmailNotificationContent create(NotificationContent notification, String emailContent) {
+        return EmailNotificationContent.builder()
+                .userId(notification.userId())
+                .title(notification.title())
+                .emailContent(emailContent)
+                .build();
+    }
 }

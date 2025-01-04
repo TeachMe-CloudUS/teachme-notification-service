@@ -5,4 +5,6 @@ import us.cloud.teachme.notification_service.application.dto.EmailNotificationCo
 public interface AzureFunctionNotifier {
 
     void notify(EmailNotificationContent notification);
+
+    void notify(EmailNotificationContent notification, String email);
 }
