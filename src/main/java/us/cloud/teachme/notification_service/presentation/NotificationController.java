@@ -25,7 +25,7 @@ import java.util.Objects;
 @SecurityRequirement(name = "Authorization")
 public class NotificationController {
 
-    private static final Integer DEFAULT_MAX = 5;
+    private static final Integer DEFAULT_MAX = 10;
     private final SimpMessagingTemplate messagingTemplate;
     private final MongoNotificationRepository repository;
 
