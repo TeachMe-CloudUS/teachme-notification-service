@@ -33,6 +33,7 @@ jobs:
           docker build \
             --secret id=maven_settings,src=$HOME/.m2/settings.xml \
             -t raminkr/teachme-notification-service:${{ github.sha }} \
+            -t raminkr/teachme-notification-service:latest \
             .
 
       - name: Log in to Docker Hub 🔒
@@ -42,4 +43,6 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Push Docker image to Docker Hub 🫸
-        run: docker push raminkr/teachme-notification-service:${{ github.sha }}
+        run: |
+          docker push raminkr/teachme-notification-service:${{ github.sha }}
+          docker push raminkr/teachme-notification-service:latest
