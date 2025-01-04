@@ -1,0 +1,49 @@
+name: CI ∫
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    steps:
+      - name: Check out the code 💻
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 ☕️
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up maven settings ⚙️
+        uses: s4u/maven-settings-action@v3.1.0
+        with:
+          servers: |
+            [{
+                "id": "github",
+                "username": "${{ github.actor }}",
+                "password": "${{ secrets.GITHUB_TOKEN }}"
+            }]
+
+      - name: Clear project 🧹
+        run: mvn clean
+
+      - name: Compile the project 🎁
+        run: mvn compile
+
+      - name: Run test case 🧪
+        run: mvn test
+
+      - name: Build with Maven 👷‍♀️
+        run: mvn clean install package
