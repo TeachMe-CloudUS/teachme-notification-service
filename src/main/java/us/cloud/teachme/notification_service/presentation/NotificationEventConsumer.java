@@ -19,6 +19,7 @@ public class NotificationEventConsumer {
     @KafkaListener(topics = {
             "student-service.student.created",
             "student-service.student.updated",
+            "certification-service.certificate.created",
             "auth-service.user.created",
     })
     public void consume(@Payload String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {

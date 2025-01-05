@@ -33,23 +33,18 @@ public class CertificateCreatedEventHandler implements KafkaEventHandler {
             var event = mapper.readValue(message, CertificateCreatedEvent.class);
 
             var entity = Notification.builder()
-                    .title("Welcome to TeachMe!")
+                    .title("Congratulations!")
                     .userId(event.getUserId())
                     .message("""
                             <div class="notification-content">
                                 <h4>Congratulations, %s!</h4>
                                 <p>We're excited to share that you've successfully completed your course "%s" and your certificate is ready for download!</p>
                                 <p>This is a significant milestone, and we're proud to celebrate your achievement with you.</p>
-                                <p>Here’s what you can do next:</p>
-                                <ul>
-                                    <li>Access your <strong>Courses</strong> to view and download your certificate.</li>
-                                    <li>Share your accomplishment with your network to showcase your expertise.</li>
-                                    <li>Explore new courses in our <strong>Course Library</strong> to keep growing your skills.</li>
-                                </ul>
+                                <p>You can download your certificate <a href="%s" target="_blank">here</a>.</p>
                                 <p>If you have any questions or need assistance, feel free to visit our <a href="/student/help">Help Center</a>.</p>
-                                <p>Once again, congratulations on your achievement! Keep up the great work!</p>
+                                <p>Once again, congratulations on your achievement! Keep up the great work! 🎉</p>
                             </div>
-                            """.formatted(event.getStudentName() + " " + event.getStudentSurname(), event.getCourseName()))
+                            """.formatted(event.getStudentName() + " " + event.getStudentSurname(), event.getCourseName(), event.getBlobUrl()))
                     .previewText("Congratulations, %s! We're excited to share that you've successfully completed your course \"%s\" and your certificate is ready for download!"
                             .formatted(event.getStudentName() + " " + event.getStudentSurname(), event.getCourseName()))
                     .type("CERTIFICATE_CREATED")

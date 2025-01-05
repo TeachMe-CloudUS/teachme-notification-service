@@ -16,4 +16,5 @@ public class CertificateCreatedEvent extends DomainEvent {
     private String courseName;
     private String studentName;
     private String studentSurname;
+    private String blobUrl;
 }
