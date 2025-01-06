@@ -38,7 +38,7 @@ public class CertificateCreatedEventHandler implements KafkaEventHandler {
                     .message("""
                             <div class="notification-content">
                                 <h4>Congratulations, %s!</h4>
-                                <p>We're excited to share that you've successfully completed your course "%s" and your certificate is ready for download!</p>
+                                <p>We're excited to share that you've successfully completed your course <b>"%s"</b> and your certificate is ready for download!</p>
                                 <p>This is a significant milestone, and we're proud to celebrate your achievement with you.</p>
                                 <p>You can download your certificate <a href="%s" target="_blank">here</a>.</p>
                                 <p>If you have any questions or need assistance, feel free to visit our <a href="/student/help">Help Center</a>.</p>
