@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
-import us.cloud.teachme.notification_service.application.ports.AzureFunctionNotifier;
-import us.cloud.teachme.notification_service.presentation.event.UserDeletedEvent;
+import us.cloud.teachme.notification_service.application.ports.EmailNotifier;
+import us.cloud.teachme.notification_service.infrastructure.messaging.events.UserDeletedEvent;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 @Service
@@ -17,7 +17,7 @@ public class UserDeletedEventHandler implements KafkaEventHandler {
     private static final String TOPIC = "auth-service.user.deleted";
 
     private final MongoNotificationRepository repository;
-    private final AzureFunctionNotifier azureFunctionNotifier;
+    private final EmailNotifier emailNotifier;
     private final ObjectMapper mapper;
 
     @Override
@@ -57,7 +57,7 @@ public class UserDeletedEventHandler implements KafkaEventHandler {
                             </div>
                             """);
 
-            azureFunctionNotifier.notify(mailContent, event.getEmail());
+            emailNotifier.notify(mailContent, event.getEmail());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

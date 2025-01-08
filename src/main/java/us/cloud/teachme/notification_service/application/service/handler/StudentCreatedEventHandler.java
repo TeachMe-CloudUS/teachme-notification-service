@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
 import us.cloud.teachme.notification_service.application.dto.NotificationContent;
-import us.cloud.teachme.notification_service.application.ports.AzureFunctionNotifier;
+import us.cloud.teachme.notification_service.application.ports.EmailNotifier;
 import us.cloud.teachme.notification_service.application.ports.WebSocketPort;
 import us.cloud.teachme.notification_service.application.service.NotificationTemplateService;
 import us.cloud.teachme.notification_service.domain.Notification;
-import us.cloud.teachme.notification_service.presentation.event.StudentCreatedEvent;
+import us.cloud.teachme.notification_service.infrastructure.messaging.events.StudentCreatedEvent;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
 
 @Service
@@ -23,7 +23,7 @@ public class StudentCreatedEventHandler implements KafkaEventHandler {
     private final MongoNotificationRepository repository;
     private final ObjectMapper mapper;
     private final WebSocketPort webSocketPort;
-    private final AzureFunctionNotifier azureFunctionNotifier;
+    private final EmailNotifier emailNotifier;
 
     @Override
     public boolean canHandle(String topic) {
@@ -52,7 +52,7 @@ public class StudentCreatedEventHandler implements KafkaEventHandler {
             repository.save(entity);
 
             webSocketPort.sendNotification(content);
-            azureFunctionNotifier.notify(mailContent);
+            emailNotifier.notify(mailContent);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

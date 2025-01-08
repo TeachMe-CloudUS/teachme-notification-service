@@ -1,0 +1,98 @@
+services:
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      secrets:
+        - maven_settings
+    volumes:
+      - .:/app
+      - ./target:/app/target
+    environment:
+      - SPRING_PROFILES_ACTIVE=standalone
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - BLOB_STORAGE_CONTAINER_NAME=profile-pictures
+      - BLOB_STORAGE_CONNECTION_STRING=UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://blob-storage:10000
+      - SECURITY_JWT_SECRET_KEY=ODE2NTVkZDQ2ZGUzMWE4MzllY2ViZjI2OGUxZTBmMWNjMjk5NzRhNDM3NjVlZDZiZTU1ZDJlMWZjMzI2YWZlMQ==
+      - TEACHME_COURSE_SERVICE_URL=http://course-service
+      - SPRING_DATA_MONGODB_URI=mongodb://user:pass@db:27017
+      - SPRING_DATA_MONGODB_DATABASE=notifications
+      - GATEWAY_SERVER_URL=http://localhost:8080
+      - KAFKA_CONFIG_BOOTSTRAP_SERVER=http://notification-kafka:9092
+      - TEACHME_EMAIL_AZURE_FUNCTION_URL=http://azure-function
+    ports:
+      - "8080:8080"
+      - "35729:35729"
+    depends_on:
+      - mongo-db
+    networks:
+      - notification-service-network
+
+  azure-function:
+    image: raminkr/teachme-azure-function:latest
+    container_name: azure-function
+
+  mongo-db:
+    image: mongodb/mongodb-community-server:6.0.12-ubi8
+    container_name: db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27017:27017"
+    networks:
+      - notification-service-network
+
+  azurite-blob-storage:
+    container_name: blob-storage
+    image: mcr.microsoft.com/azure-storage/azurite:3.33.0
+    expose:
+      - 10000
+      - 10001
+      - 10002
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - blob-storage-volume:/data mcr.microsoft.com/azure-storage/azurite
+    networks:
+      - notification-service-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    networks:
+      - notification-service-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: notification-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://notification-kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - notification-service-network
+
+volumes:
+  blob-storage-volume:
+
+secrets:
+  maven_settings:
+    file: ~/.m2/settings.xml
+
+networks:
+  notification-service-network:
+    driver: bridge

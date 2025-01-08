@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.presentation;
+package us.cloud.teachme.notification_service.infrastructure.messaging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

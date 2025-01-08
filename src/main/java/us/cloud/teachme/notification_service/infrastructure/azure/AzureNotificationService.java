@@ -7,13 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
-import us.cloud.teachme.notification_service.application.ports.AzureFunctionNotifier;
+import us.cloud.teachme.notification_service.application.ports.EmailNotifier;
 import us.cloud.teachme.notification_service.application.ports.StudentServiceClient;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AzureNotificationService implements AzureFunctionNotifier {
+public class AzureNotificationService implements EmailNotifier {
 
     private final StudentServiceClient userServiceClient;
     private final RestClient azureFunctionClient;

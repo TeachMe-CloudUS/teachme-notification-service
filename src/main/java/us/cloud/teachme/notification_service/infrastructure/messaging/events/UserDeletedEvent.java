@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.presentation.event;
+package us.cloud.teachme.notification_service.infrastructure.messaging.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentUpdatedEvent extends DomainEvent {
+public class UserDeletedEvent extends DomainEvent {
 
-    private String studentId;
+    private String id;
+    private String email;
     private String eventName;
-    private String userId;
-    private String phoneNumber;
-    private String plan;
 }

@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.presentation.event;
+package us.cloud.teachme.notification_service.infrastructure.messaging.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

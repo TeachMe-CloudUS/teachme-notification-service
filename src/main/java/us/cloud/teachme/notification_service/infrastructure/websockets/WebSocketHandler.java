@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.infrastructure.websocket;
+package us.cloud.teachme.notification_service.infrastructure.websockets;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

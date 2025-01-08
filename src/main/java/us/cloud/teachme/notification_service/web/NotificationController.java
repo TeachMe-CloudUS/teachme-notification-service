@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.presentation;
+package us.cloud.teachme.notification_service.web;
 
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
@@ -6,14 +6,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import us.cloud.teachme.notification_service.application.dto.NotificationsInfo;
 import us.cloud.teachme.notification_service.domain.Notification;
 import us.cloud.teachme.notification_service.infrastructure.persistence.MongoNotificationRepository;
-import us.cloud.teachme.notification_service.presentation.request.CreateNotificationRequestDto;
-import us.cloud.teachme.notification_service.presentation.request.UpdateNotificationRequestDto;
+import us.cloud.teachme.notification_service.web.request.CreateNotificationRequestDto;
+import us.cloud.teachme.notification_service.web.request.UpdateNotificationRequestDto;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,14 +51,14 @@ public class NotificationController {
                 .subList(0, max);
     }
 
-
     @GetMapping("/{id}")
     @Operation(summary = "Get a specific notification", description = "Fetches the notification by its ID for the currently authenticated user.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the notification")
     @ApiResponse(responseCode = "404", description = "Notification not found")
     @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
     public Notification getNotification(@PathVariable String id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
     }
 
     @GetMapping("/info")
@@ -83,7 +85,9 @@ public class NotificationController {
     @ApiResponse(responseCode = "404", description = "Notification not found")
     @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
     public void readMessage(@RequestParam("id") String id) {
-        var notification = repository.findById(id).orElseThrow();
+        var notification = repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found")
+        );
         notification.setRead(true);
         repository.save(notification);
     }
@@ -111,7 +115,7 @@ public class NotificationController {
     @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
     public Notification updateNotification(@PathVariable String id, @RequestBody UpdateNotificationRequestDto updatedNotification) {
         var existingNotification = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
 
         if (updatedNotification.getTitle() != null) {
             existingNotification.setTitle(updatedNotification.getTitle());
@@ -134,7 +138,7 @@ public class NotificationController {
     @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token is missing or invalid")
     public void deleteNotification(@PathVariable String id) {
         var existingNotification = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
         repository.delete(existingNotification);
     }
 

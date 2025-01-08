@@ -1,4 +1,4 @@
-package us.cloud.teachme.notification_service.presentation.request;
+package us.cloud.teachme.notification_service.web.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

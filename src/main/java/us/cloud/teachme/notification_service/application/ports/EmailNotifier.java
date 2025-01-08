@@ -2,7 +2,7 @@ package us.cloud.teachme.notification_service.application.ports;
 
 import us.cloud.teachme.notification_service.application.dto.EmailNotificationContent;
 
-public interface AzureFunctionNotifier {
+public interface EmailNotifier {
 
     void notify(EmailNotificationContent notification);
 
